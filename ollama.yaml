@@ -41,7 +41,7 @@ spec:
         command:
         - /bin/sh
         - -c 
-        - ollama serve > /dev/null 2>&1 & sleep 10 && ollama pull mistral:7b && ollama pull snowflake-arctic-embed:137m
+        - ollama serve > /dev/null 2>&1 & sleep 10 && ollama pull starling-lm:7b && ollama pull snowflake-arctic-embed:137m
         volumeMounts:
         - mountPath: "/root/.ollama"
           name: storage
