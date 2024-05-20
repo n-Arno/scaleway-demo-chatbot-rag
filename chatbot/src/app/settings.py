@@ -2,7 +2,6 @@ import os, boto3
 from typing import Dict, Any
 from sqlalchemy import make_url
 from llama_index.core.settings import Settings
-from llama_index.core import StorageContext
 from llama_index.llms.ollama import Ollama
 from llama_index.embeddings.ollama import OllamaEmbedding
 from llama_index.vector_stores.postgres import PGVectorStore
@@ -10,6 +9,7 @@ from llama_index.vector_stores.postgres import PGVectorStore
 def llm_config_from_env() -> Dict:
     from llama_index.core.constants import DEFAULT_TEMPERATURE
 
+    
     model = os.getenv("MODEL")
     temperature = os.getenv("LLM_TEMPERATURE", DEFAULT_TEMPERATURE)
 
@@ -34,7 +34,7 @@ def embedding_config_from_env() -> Dict:
 
 def vector_config_from_env() -> Dict:
     db_config = os.getenv("DB_CFG")
-    embed_dim = os.getenv("VECTOR_SIZE")
+    embed_dim = int(os.getenv("VECTOR_SIZE"))
 
     url = make_url(db_config)
 
@@ -44,7 +44,7 @@ def vector_config_from_env() -> Dict:
         "password": url.password,
         "port": url.port,
         "user": url.username,
-        "table_name": "default",
+        "table_name": "chatbot",
         "embed_dim": embed_dim,
     }
     return config
@@ -73,13 +73,12 @@ def init_settings():
     Settings.chunk_size = int(os.getenv("CHUNK_SIZE", "1024"))
     Settings.chunk_overlap = int(os.getenv("CHUNK_OVERLAP", "20"))
 
-def get_storage_context() -> Any:
+def get_vector_store() -> Any:
     vector_configs = vector_config_from_env()
    
     vector_store = PGVectorStore.from_params(**vector_configs)
-    storage_context = StorageContext.from_defaults(vector_store=vector_store)
 
-    return storage_context
+    return vector_store
 
 def get_boto3_client() -> Any:
     boto3_configs = boto3_config_from_env()

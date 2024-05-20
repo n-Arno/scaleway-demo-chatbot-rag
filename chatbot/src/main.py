@@ -9,7 +9,9 @@ import os
 import uvicorn
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
+from app.utils.ingest import do_ingest
 from app.api.routers.chat import chat_router
 from app.settings import init_settings
 
@@ -18,6 +20,12 @@ init_settings()
 app = FastAPI()
 api = FastAPI(root_path="/api")
 api.include_router(chat_router, prefix="/chat")
+
+@api.get("/ingest")
+async def ingester():
+    do_ingest()
+    return HTMLResponse(content="Done!", status_code=200)
+
 app.mount("/api", api)
 app.mount("/", StaticFiles(directory="front", html=True), name="static")
 
