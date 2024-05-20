@@ -2,6 +2,7 @@ import os, warnings, psycopg2, shutil
 from llama_index.core import StorageContext, SimpleDirectoryReader, VectorStoreIndex
 from app.settings import get_vector_store, get_boto3_client
 
+
 def db_init():
     dsn = os.getenv("DB_CFG")
 
@@ -19,7 +20,8 @@ def db_init():
             cur = conn.cursor()
             cur.execute("DROP TABLE data_chatbot;")
         except psycopg2.errors.UndefinedTable:
-            pass 
+            pass
+
 
 def do_ingest():
     # Avoid ugly warnings

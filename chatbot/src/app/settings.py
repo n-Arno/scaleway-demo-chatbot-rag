@@ -6,10 +6,10 @@ from llama_index.llms.ollama import Ollama
 from llama_index.embeddings.ollama import OllamaEmbedding
 from llama_index.vector_stores.postgres import PGVectorStore
 
+
 def llm_config_from_env() -> Dict:
     from llama_index.core.constants import DEFAULT_TEMPERATURE
 
-    
     model = os.getenv("MODEL")
     temperature = os.getenv("LLM_TEMPERATURE", DEFAULT_TEMPERATURE)
 
@@ -21,6 +21,7 @@ def llm_config_from_env() -> Dict:
     }
     return config
 
+
 def embedding_config_from_env() -> Dict:
     model_name = os.getenv("EMBED")
     embed_batch_size = int(os.getenv("BATCH_SIZE", "10"))
@@ -31,6 +32,7 @@ def embedding_config_from_env() -> Dict:
         "base_url": "http://ollama:11434",
     }
     return config
+
 
 def vector_config_from_env() -> Dict:
     db_config = os.getenv("DB_CFG")
@@ -49,6 +51,7 @@ def vector_config_from_env() -> Dict:
     }
     return config
 
+
 def boto3_config_from_env() -> Dict:
     aws_access_key_id = os.getenv("S3_ACCESS_KEY")
     aws_secret_access_key = os.getenv("S3_SECRET_KEY")
@@ -64,6 +67,7 @@ def boto3_config_from_env() -> Dict:
     }
     return config
 
+
 def init_settings():
     llm_configs = llm_config_from_env()
     embed_configs = embedding_config_from_env()
@@ -73,18 +77,18 @@ def init_settings():
     Settings.chunk_size = int(os.getenv("CHUNK_SIZE", "1024"))
     Settings.chunk_overlap = int(os.getenv("CHUNK_OVERLAP", "20"))
 
+
 def get_vector_store() -> Any:
     vector_configs = vector_config_from_env()
-   
+
     vector_store = PGVectorStore.from_params(**vector_configs)
 
     return vector_store
 
+
 def get_boto3_client() -> Any:
     boto3_configs = boto3_config_from_env()
-    
+
     client = boto3.Session().client(**boto3_configs)
 
     return client
-
-

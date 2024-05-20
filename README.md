@@ -69,9 +69,9 @@ Edit `deploy.yaml` and insert the value for the LB IP and DNS entry:
 (...)
 ```
 
-4) **Create an Object Storage bucket and upload document**
+4) **Create an Object Storage bucket and upload documents for RAG**
 
-Create an Object Storage bucket, upload document at the root of the bucket (no prefix) and create the associated API Key.
+Create an Object Storage bucket, upload documents at the root of the bucket (no prefix) and create the associated API Key.
 
 The type of document readable is found [here](https://docs.llamaindex.ai/en/stable/module_guides/loading/simpledirectoryreader/#supported-file-types).
 
@@ -122,6 +122,11 @@ Deploy the chat bot:
 ```
 kubectl apply -f deploy.yaml
 ```
+
+Ingestion of new documents
+--------------------------
+
+To trigger re-ingestion, navigate to `https://<your-dns-entry>:443/api/docs` and trigger `/ingest`
 
 Credits
 -------

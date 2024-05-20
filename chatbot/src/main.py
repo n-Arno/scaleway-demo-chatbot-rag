@@ -4,9 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-import logging
-import os
-import uvicorn
+import logging, os, uvicorn, warnings
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
@@ -15,6 +13,10 @@ from app.utils.ingest import do_ingest
 from app.api.routers.chat import chat_router
 from app.settings import init_settings
 
+# Avoid ugly warnings
+warnings.filterwarnings("ignore", category=DeprecationWarning)
+warnings.filterwarnings("ignore", category=FutureWarning)
+
 init_settings()
 
 app = FastAPI()
@@ -22,17 +24,21 @@ app = FastAPI()
 api = FastAPI(root_path="/api")
 api.include_router(chat_router, prefix="/chat")
 
+
 @api.get("/ingest")
 async def ingester():
     do_ingest()
     return HTMLResponse(content="Done!", status_code=200)
 
+
 app.mount("/api", api)
 app.mount("/", StaticFiles(directory="front", html=True), name="static")
+
 
 @app.on_event("startup")
 async def startup():
     do_ingest()
+
 
 environment = os.getenv("ENVIRONMENT", "dev")  # Default to 'development' if not set
 
