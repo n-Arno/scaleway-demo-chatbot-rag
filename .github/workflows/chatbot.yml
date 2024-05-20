@@ -1,9 +1,9 @@
-name: Docker image chatbot
+name: Docker image chatbot-rag
 on:
-  workflow_call:
+  workflow_dispatch:
   push:
     branches:
-      - master
+      - main
     paths:
       - "chatbot/**"
 
