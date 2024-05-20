@@ -5,11 +5,6 @@ Simple demo of a Chatbot based on Kapsule + L40s + Ollama (LLM and embedding).
 
 RAG is done leveraging a Scaleway Managed PostgreSQL database with pgvector extension.
 
-**WORK IN PROGESS**
-===================
-
-This repo is not yet usable. Coming soon!
-
 Setup
 -----
 
@@ -36,7 +31,9 @@ Sample output:
 ```
 Outputs:
 
-lb_ip = "X.X.X.X"
+lb_ip             = "X.X.X.X"
+database_ip       = "Y.Y.Y.Y"
+database_password = "ZZZZZZZ"
 ```
 
 2) **Collect resulting IP address for LB and create a DNS entry**
@@ -72,7 +69,35 @@ Edit `deploy.yaml` and insert the value for the LB IP and DNS entry:
 (...)
 ```
 
-4) **Deploy the chatbot in Kapsule**
+4) **Create an Object Storage bucket and upload document**
+
+Create an Object Storage bucket, upload document at the root of the bucket (no prefix) and create the associated API Key.
+
+The type of document readable is found [here](https://docs.llamaindex.ai/en/stable/module_guides/loading/simpledirectoryreader/#supported-file-types).
+
+5) **Add credentials in the deployment**
+
+Edit `deploy.yaml` and insert DB internal IP and password, together with the Object Storage access information:
+
+```
+(...)
+apiVersion: v1
+kind: Secret
+metadata:
+  labels:
+    app: chatbot
+  name: chatbot
+stringData:
+  S3_ACCESS_KEY: "<scw api access key>"
+  S3_SECRET_KEY: "<scw api secret key>"
+  S3_ENDPOINT: "https://s3.fr-par.scw.cloud"
+  S3_REGION: "fr-par"
+  S3_BUCKET: "<bucket-name>"
+  DB_CFG: "postgres://vector:<db password>@<db internal ip>:5432/vector"
+(...)
+```
+
+6) **Deploy the chatbot in Kapsule**
 
 We will use the created `kubeconfig.yaml` file to access the cluster, but you can also use the console to generate this file. 
 

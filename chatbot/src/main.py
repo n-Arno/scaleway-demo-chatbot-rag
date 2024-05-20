@@ -18,6 +18,7 @@ from app.settings import init_settings
 init_settings()
 
 app = FastAPI()
+
 api = FastAPI(root_path="/api")
 api.include_router(chat_router, prefix="/chat")
 
@@ -28,6 +29,10 @@ async def ingester():
 
 app.mount("/api", api)
 app.mount("/", StaticFiles(directory="front", html=True), name="static")
+
+@app.on_event("startup")
+async def startup():
+    do_ingest()
 
 environment = os.getenv("ENVIRONMENT", "dev")  # Default to 'development' if not set
 

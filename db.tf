@@ -21,6 +21,25 @@ resource "scaleway_rdb_instance" "vector" {
   depends_on = [random_password.db, scaleway_vpc_gateway_network.kapsule]
 }
 
+resource "scaleway_rdb_database" "vector" {
+  instance_id = scaleway_rdb_instance.vector.id
+  name        = "vector"
+}
+
+resource "scaleway_rdb_user" "vector" {
+  instance_id = scaleway_rdb_instance.vector.id
+  name        = "vector"
+  password    = random_password.db.result
+  is_admin    = false
+}
+
+resource "scaleway_rdb_privilege" "main" {
+  instance_id   = scaleway_rdb_instance.vector.id
+  user_name     = scaleway_rdb_user.vector.name
+  database_name = scaleway_rdb_database.vector.name
+  permission    = "all"
+}
+
 resource "scaleway_rdb_acl" "private_only" {
   # default acl for DB is 0.0.0.0/0.
   # We can't delete it via terraform but we can replace it
